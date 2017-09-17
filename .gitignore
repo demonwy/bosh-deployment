@@ -1,3 +1,5 @@
 *.json
 creds.yml
 tmp
+.idea
+idea/*.*
