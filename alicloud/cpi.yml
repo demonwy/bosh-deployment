@@ -17,12 +17,14 @@
 - type: replace
   path: /resource_pools/name=vms/cloud_properties?
   value:
-    instance_type: ecs.n4.large
-    image_id: m-2zeggz4i4n2z510ajcvw
-    instance_name: micro-bosh-beijing-3
+    image_id: m-12345
+    instance_type: ecs.mn4.large
+    instance_charge_type: PostPaid
+    instance_name: bosh-director
     system_disk: {size: 50, type: cloud_efficiency}
     ephemeral_disk: {size: 50, type: cloud_efficiency}
     availability_zone: ((az))
+    halt_mark: false
 
 # - type: replace
 #   path: /disk_pools/name=disks/cloud_properties?
@@ -32,8 +34,9 @@
   # path: /networks/name=default/subnets/0/cloud_properties?
   path: /networks/name=private/subnets/0/cloud_properties?
   value:
-    VSwitchId: ((subnet_id))
-    SecurityGroupId: ((security_group_id))
+    security_group_id: ((security_group_id))
+    vswitch_id: ((subnet_id))
+    internet_charge_type: PayByTraffic
 
 - type: replace
   path: /networks/-
@@ -41,8 +44,8 @@
     name: public
     type: vip
     cloud_properties: {
-      InternetMaxBandwidthOut: "10",
-      InternetChargeType: PayByTraffic
+      internet_max_bandwidth_out: "10",
+      internet_charge_type: PayByTraffic
     }
 
 # Enable registry job
@@ -114,11 +117,12 @@
   path: /instance_groups/name=bosh/properties/alicloud?
   value: &cpi_conf
     access_key_id: ((access_key_id))
-    access_key: ((secret_access_key))
+    access_key_secret: ((secret_access_key))
     default_key_name: ((default_key_name))
     default_security_groups: ((security_group_id))
     region_id: ((region))
-    image_id: m-2zeggz4i4n2z510ajcvw
+    zone_id: ((zone))
+    image_id: m-12345
 
 - type: replace
   path: /instance_groups/name=bosh/properties/nats?
