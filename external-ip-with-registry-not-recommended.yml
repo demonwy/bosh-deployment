@@ -7,7 +7,7 @@
     type: vip
 
 - type: replace
-  path: /instance_groups/name=bosh/networks/0/default?
+  path: /instance_groups/name=bosh/networks/0/private?
   value: [dns, gateway]
 
 - type: replace
@@ -23,11 +23,11 @@
 # todo should not access non-defined vars
 - type: replace
   path: /cloud_provider/mbus
-  value: https://mbus:((mbus_bootstrap_password))@((external_ip)):6868
+  value: https://mbus:mbus-password@((external_ip)):6868
 
-- type: replace
-  path: /cloud_provider/ssh_tunnel/host
-  value: ((external_ip))
+#- type: replace
+#  path: /cloud_provider/ssh_tunnel/host
+#  value: ((external_ip))
 
 - type: replace
   path: /variables/name=mbus_bootstrap_ssl/options/alternative_names/-

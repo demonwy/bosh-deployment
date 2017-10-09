@@ -162,6 +162,14 @@
   path: /cloud_provider/properties/nats?
   value: *nats
 
+#- type: replace
+#  path: /cloud_provider/ssh_tunnel?
+#  value:
+#    host: ((internal_ip))
+#    port: 22
+#    user: vcap
+#    private_key: ((private_key))
+
 - type: replace
   path: /cloud_provider/properties/alicloud?
   value: *cpi_conf
