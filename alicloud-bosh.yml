@@ -51,7 +51,7 @@ instance_groups:
   # - name: default
   - name: private
     static_ips: [((internal_ip))]
-     default: [dns, gateway]
+    default: [dns, gateway]
   properties:
     nats:
       address: 127.0.0.1
