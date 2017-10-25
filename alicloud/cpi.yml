@@ -21,8 +21,8 @@
     instance_type: ecs.mn4.large
     instance_charge_type: PostPaid
     instance_name: bosh-director
-    system_disk: {size: 50, type: cloud_efficiency}
-    ephemeral_disk: {size: 50, type: cloud_efficiency}
+    system_disk: {size: 51200, type: cloud_efficiency}
+    ephemeral_disk: {size: 51_200, type: cloud_efficiency}
     availability_zone: ((az))
     halt_mark: false
 
