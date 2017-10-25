@@ -7,46 +7,37 @@
     url: file:///root/downloads/bosh-alicloud-cpi-0+dev.9.tgz
     #sha1: 26b3a5c43e6f82594a373309a495660d6db26254
 
+# light stemcell
 - type: replace
   path: /resource_pools/name=vms/stemcell?
   value:
-    url: file:///root/downloads/light-bosh-stemcell-3308-google-kvm-ubuntu-trusty-go_agent.tgz
-    #sha1: 316a699d44f49d69493b1545d4addd17b78b5840
+    url: http://bosh-alicloud.oss-cn-hangzhou.aliyuncs.com/light-bosh-stemcell-1008-alicloud-kvm-ubuntu-trusty-go_agent.tgz
+    sha1: fd23369acfb1b6c3a712d9abb7b32637cdca7763
 
 # Configure Alibaba sizes
 - type: replace
   path: /resource_pools/name=vms/cloud_properties?
   value:
-    image_id: m-12345
     instance_type: ecs.mn4.large
     instance_charge_type: PostPaid
     instance_name: bosh-director
-    system_disk: {size: 51200, type: cloud_efficiency}
+    system_disk: {size: 51_200, type: cloud_efficiency}
     ephemeral_disk: {size: 51_200, type: cloud_efficiency}
+    instance_role: ""
     availability_zone: ((az))
-    halt_mark: false
-
-# - type: replace
-#   path: /disk_pools/name=disks/cloud_properties?
-#   value: {type: gp2}
 
 - type: replace
-  # path: /networks/name=default/subnets/0/cloud_properties?
-  path: /networks/name=private/subnets/0/cloud_properties?
+  path: /disk_pools/name=disks/cloud_properties?
+  value:
+    type: "cloud_efficiency"
+    instance_role: "director"
+
+- type: replace
+  path: /networks/name=default/subnets/0/cloud_properties?
   value:
     security_group_id: ((security_group_id))
     vswitch_id: ((subnet_id))
     internet_charge_type: PayByTraffic
-
-- type: replace
-  path: /networks/-
-  value:
-    name: public
-    type: vip
-    cloud_properties: {
-      internet_max_bandwidth_out: "10",
-      internet_charge_type: PayByTraffic
-    }
 
 # Enable registry job
 - type: replace
@@ -68,35 +59,28 @@
       database: bosh
       adapter: postgres
     http:
-      user: admin
-      password: admin
-      #password: ((registry_password))
+      user: registry
+      password: ((registry_password))
       port: 25777
-    username: admin
-    # password: ((registry_password))
+    username: registry
+    password: ((registry_password))
     password: admin
     port: 25777
 
-- type: replace
-  path: /instance_groups/name=bosh/properties/ntp
-  value: &ntp
-  - 0.pool.ntp.org
-  - 1.pool.ntp.org
-
-- type: replace
-  path: /instance_groups/name=bosh/properties/blobstore?
-  value: &blobstore
-    address: ((internal_ip))
-    port: 25250
-    provider: dav
-    director:
-      user: director
-      # password: ((blobstore_director_password))
-      password: director-password
-    agent:
-      user: agent
-      # password: ((blobstore_agent_password))
-      password: agent-password
+#- type: replace
+#  path: /instance_groups/name=bosh/properties/blobstore?
+#  value: &blobstore
+#    address: ((internal_ip))
+#    port: 25250
+#    provider: dav
+#    director:
+#      user: director
+#      # password: ((blobstore_director_password))
+#      password: director-password
+#    agent:
+#      user: agent
+#      # password: ((blobstore_agent_password))
+#      password: agent-password
 
 # Add CPI job
 - type: replace
@@ -115,64 +99,14 @@
 
 - type: replace
   path: /instance_groups/name=bosh/properties/alicloud?
-  value: &cpi_conf
-    access_key_id: ((access_key_id))
-    access_key_secret: ((secret_access_key))
-    default_key_name: ((default_key_name))
-    default_security_groups: ((security_group_id))
+  value: &alicloud
     region_id: ((region))
-    zone_id: ((az))
-    image_id: m-12345
-
-- type: replace
-  path: /instance_groups/name=bosh/properties/nats?
-  value: &nats
-    address: ((internal_ip))
-    user: nats
-    # password: ((nats_password))
-    password: nats-password
-
-# - type: replace
-#   path: /cloud_provider/ssh_tunnel?
-#   value:
-#     host: ((internal_ip))
-#     port: 22
-#     user: vcap
-#     private_key: ((private_key))
-
-- type: replace
-  path: /cloud_provider/properties/registry?
-  value: *registry
-
-- type: replace
-  path: /cloud_provider/properties/agent/blobstore?
-  value:
-    provider: "dav"
-    options:
-      endpoint: "http://((internal_ip)):25250"
-      user: "agent"
-      # password: ((blobstore_agent_password))
-      password: "agent-password"
-
-- type: replace
-  path: /cloud_provider/properties/blobstore?
-  value: *blobstore
-
-- type: replace
-  path: /cloud_provider/properties/nats?
-  value: *nats
-
-#- type: replace
-#  path: /cloud_provider/ssh_tunnel?
-#  value:
-#    host: ((internal_ip))
-#    port: 22
-#    user: vcap
-#    private_key: ((private_key))
+    access_key_id: ((access_key_id))
+    access_key_secret: ((access_key_secret))
 
 - type: replace
   path: /cloud_provider/properties/alicloud?
-  value: *cpi_conf
+  value: *alicloud
 
 - type: replace
   path: /variables/-

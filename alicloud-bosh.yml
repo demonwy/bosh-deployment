@@ -8,33 +8,25 @@ releases:
 
 resource_pools:
 - name: vms
-  # network: default
-  network: private
+  network: default
   env:
-    bosh:
-      password: '*'
-      mbus:
-        cert: ((mbus_bootstrap_ssl))
+#    bosh:
+#      password: '*'
+#      mbus:
+#        cert: ((mbus_bootstrap_ssl))
 
-#disk_pools:
-#- name: disks
-#  disk_size: 32_768
+disk_pools:
+- name: disks
+  disk_size: 32_768
 
 networks:
-# - name: default
-- name: private
+- name: default
   type: manual
   subnets:
   - range: ((internal_cidr))
     gateway: ((internal_gw))
     static: [((internal_ip))]
     dns: [8.8.8.8]
-# - name: public
-#   type: vip
-#   cloud_properties: {
-#     InternetMaxBandwidthOut: "10",
-#     InternetChargeType: PayByTraffic
-#   }
 
 instance_groups:
 - name: bosh
@@ -46,12 +38,10 @@ instance_groups:
   - {name: director, release: bosh}
   - {name: health_monitor, release: bosh}
   resource_pool: vms
-  #persistent_disk_pool: disks
+  persistent_disk_pool: disks
   networks:
-  # - name: default
-  - name: private
+  - name: default
     static_ips: [((internal_ip))]
-#    default: [dns, gateway]
   properties:
     nats:
       address: 127.0.0.1
@@ -70,12 +60,10 @@ instance_groups:
       provider: dav
       director:
         user: director
-        # password: ((blobstore_director_password))
-        password: director-password
+        password: ((blobstore_director_password))
       agent:
         user: agent
-        # password: ((blobstore_agent_password))
-        password: agent-password
+        password: ((blobstore_agent_password))
     director:
       address: 127.0.0.1
       name: ((director_name))
@@ -87,7 +75,7 @@ instance_groups:
       enable_nats_delivered_templates: true
       workers: 4
       events:
-       record_events: true
+        record_events: true
       ssl:
         key: ((director_ssl.private_key))
         cert: ((director_ssl.certificate))
@@ -111,27 +99,15 @@ instance_groups:
     - time3.google.com
     - time4.google.com
     agent:
-      mbus: nats://nats:nats-password@((internal_ip)):4222
+      mbus: nats://nats:((nats_password))@((internal_ip)):4222
 
 cloud_provider:
-  # mbus: https://mbus:((mbus_bootstrap_password))@((internal_ip)):6868
-  mbus: https://mbus:mbus-password@((internal_ip)):6868
-#   cert: ((mbus_bootstrap_ssl))
+  mbus: https://mbus:((mbus_bootstrap_password))@((internal_ip)):6868
+#  cert: ((mbus_bootstrap_ssl))
   properties:
-    agent:
-      # mbus: "https://mbus:((mbus_bootstrap_password))@0.0.0.0:6868"
-      mbus: "nats://nats:nats-password@((internal_ip)):4222"
-      blobstore:
-        provider: "dav"
-        options:
-          endpoint: "http://((internal_ip)):25250"
-          user: "agent"
-          # password: ((blobstore_agent_password))
-          password: "agent-password"
+    agent: {mbus: "https://mbus:((mbus_bootstrap_password))@0.0.0.0:6868"}
     blobstore: {provider: local, path: /var/vcap/micro_bosh/data/cache}
     ntp: *ntp
-    #registry: *registry
-    #blobstore: *blobstore
 
 variables:
 - name: admin_password
