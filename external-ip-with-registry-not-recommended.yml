@@ -7,11 +7,8 @@
 #    type: vip
 
 - type: replace
-  path: /instance_groups/name=bosh/networks/0
-  value:
-    name: default
-    static_ips: [((internal_ip))]
-    default: [dns, gateway]
+  path: /instance_groups/name=bosh/networks/0/default?
+  value: [dns, gateway]
 
 - type: replace
   path: /instance_groups/name=bosh/networks/-
