@@ -9,7 +9,7 @@
 - type: replace
   path: /instance_groups/name=bosh/networks/0
   value:
-    name: private
+    name: default
     static_ips: [((internal_ip))]
     default: [dns, gateway]
 
