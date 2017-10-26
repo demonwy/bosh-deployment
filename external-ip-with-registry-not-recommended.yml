@@ -1,10 +1,10 @@
 # WARNING: We do not recommend to expose Director and any other services over public addresses.
 
-#- type: replace
-#  path: /networks/-
-#  value:
-#    name: public
-#    type: vip
+- type: replace
+  path: /networks/-
+  value:
+    name: public
+    type: vip
 
 - type: replace
   path: /instance_groups/name=bosh/networks/0/default?
@@ -23,7 +23,7 @@
 # todo should not access non-defined vars
 - type: replace
   path: /cloud_provider/mbus
-  value: https://mbus:mbus-password@((external_ip)):6868
+  value: https://mbus:((mbus_bootstrap_password))@((external_ip)):6868
 
 #- type: replace
 #  path: /cloud_provider/ssh_tunnel/host
